@@ -1,0 +1,29 @@
+[package]
+name        = "sg-swap-pair"
+version     = { workspace = true }
+authors     = ["Cosmorama <cosmorama@proton.me>"]
+edition     = { workspace = true }
+description = "Stargaze Swap constant product pool contract implementation"
+license     = { workspace = true }
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+backtraces = ["cosmwasm-std/backtraces"]
+
+[dependencies]
+cosmwasm-schema = { workspace = true }
+cosmwasm-std    = { workspace = true }
+cw2             = { workspace = true }
+cw20            = { workspace = true }
+cw20-base       = { workspace = true }
+cw-storage-plus = { workspace = true }
+cw-utils        = { workspace = true }
+sg-swap-stake   = { workspace = true }
+sg-swap         = { workspace = true }
+
+[dev-dependencies]
+cw-multi-test   = { workspace = true }
+proptest        = { workspace = true }
+sg-swap-factory = { workspace = true }
