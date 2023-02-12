@@ -22,8 +22,8 @@ cosmwasm-schema     = "1.1"
 cosmwasm-std        = "1.1"
 cw2                 = "1.0"
 cw20                = "1.0"
-cw721               = "0.16.0"
-cw721-base          = "0.16.0"
+cw721               = { git = "https://github.com/CosmWasm/cw-nfts" }
+cw721-base          = { git = "https://github.com/CosmWasm/cw-nfts" }
 cw-controllers      = "1.0"
 cw-multi-test       = "0.16"
 cw-storage-plus     = "1.0"
