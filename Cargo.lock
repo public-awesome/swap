@@ -1105,6 +1105,7 @@ dependencies = [
  "cw-utils 1.0.1",
  "cw20",
  "cw20-base",
+ "cw721-base 0.16.0 (git+https://github.com/CosmWasm/cw-nfts)",
  "itertools 0.10.5",
  "thiserror",
  "uint",
@@ -1221,6 +1222,7 @@ dependencies = [
  "cw721-base 0.16.0 (git+https://github.com/CosmWasm/cw-nfts)",
  "schemars",
  "serde",
+ "sg-swap",
 ]
 
 [[package]]

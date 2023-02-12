@@ -1,19 +1,13 @@
-use cosmwasm_schema::cw_serde;
-use cosmwasm_std::{Addr, Empty, Uint128};
+use cosmwasm_std::Empty;
 use cw2::set_contract_version;
 pub use cw721_base::{ContractError, InstantiateMsg, MinterResponse};
+use sg_swap::metadata::PairMetadata;
 
 // Version info for migration
 const CONTRACT_NAME: &str = "crates.io:sg721-pair";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
-#[cw_serde]
-pub struct Metadata {
-    pub pair_contract: Addr,
-    pub shares: Uint128,
-}
-
-pub type Extension = Option<Metadata>;
+pub type Extension = Option<PairMetadata>;
 
 pub type Sg721PairMetadataContract<'a> =
     cw721_base::Cw721Contract<'a, Extension, Empty, Empty, Empty>;
@@ -63,8 +57,12 @@ pub mod entry {
 mod tests {
     use super::*;
 
-    use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
+    use cosmwasm_std::{
+        testing::{mock_dependencies, mock_env, mock_info},
+        Addr, Uint128,
+    };
     use cw721::Cw721Query;
+    use sg_swap::metadata::PairMetadata;
 
     const CREATOR: &str = "creator";
 
@@ -85,7 +83,7 @@ mod tests {
 
         let token_id = "Enterprise";
         let token_uri = Some("https://starships.example.com/Starship/Enterprise.json".into());
-        let extension = Some(Metadata {
+        let extension = Some(PairMetadata {
             pair_contract: Addr::unchecked("pair_contract"),
             shares: Uint128::from(1000u128),
         });
