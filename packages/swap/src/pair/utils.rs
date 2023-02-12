@@ -8,8 +8,8 @@ use crate::{
 };
 
 use cosmwasm_std::{
-    from_slice, wasm_execute, Addr, Api, CosmosMsg, Decimal, Fraction, QuerierWrapper, StdError,
-    StdResult, Uint128,
+    from_slice, wasm_execute, Addr, Api, CosmosMsg, Decimal, Empty, Fraction, QuerierWrapper,
+    StdError, StdResult, Uint128,
 };
 use cw20::Cw20ExecuteMsg;
 use cw721_base::ExecuteMsg as Cw721BaseExecuteMsg;
@@ -160,29 +160,30 @@ pub fn mint_token_message(
 ///
 /// * **amount** amount of LP shares that will be allocated for the NFT.
 ///
-// pub fn mint_nft_message(
-//     collection: &Addr,
-//     token_id: &str,
-//     recipient: &Addr,
-//     amount: Uint128,
-// ) -> Result<Vec<CosmosMsg>, ContractError> {
-//     let extension = Some(PairMetadata {
-//         pair_contract: Addr::unchecked("pair_contract"),
-//         shares: amount,
-//     });
+pub fn mint_nft_message(
+    liquidity_collection: &Addr,
+    pair_contract: &Addr,
+    token_id: &str,
+    recipient: &Addr,
+    amount: Uint128,
+) -> Result<Vec<CosmosMsg>, ContractError> {
+    let extension = Some(PairMetadata {
+        pair_contract: pair_contract.clone(),
+        shares: amount,
+    });
 
-//     Ok(vec![wasm_execute(
-//         collection,
-//         &Cw721BaseExecuteMsg::Mint {
-//             token_id: token_id.to_string(),
-//             owner: recipient.to_string(),
-//             token_uri: None,
-//             extension,
-//         },
-//         vec![],
-//     )?
-//     .into()])
-// }
+    Ok(vec![wasm_execute(
+        liquidity_collection,
+        &Cw721BaseExecuteMsg::<Option<PairMetadata>, Empty>::Mint {
+            token_id: token_id.to_string(),
+            owner: recipient.to_string(),
+            token_uri: None,
+            extension,
+        },
+        vec![],
+    )?
+    .into()])
+}
 
 /// Return the amount of tokens that a specific amount of LP tokens would withdraw.
 ///

@@ -18,8 +18,8 @@ use sg_swap::fee_config::FeeConfig;
 use sg_swap::pair::{
     add_referral, assert_max_spread, check_asset_infos, check_assets, check_cw20_in_pool,
     create_lp_token, get_share_in_assets, handle_referral, handle_reply, migration_check,
-    mint_token_message, save_tmp_staking_config, take_referral, ConfigResponse, ContractError,
-    Cw20HookMsg, DEFAULT_SLIPPAGE, MAX_ALLOWED_SLIPPAGE,
+    mint_nft_message, mint_token_message, save_tmp_staking_config, take_referral, ConfigResponse,
+    ContractError, Cw20HookMsg, DEFAULT_SLIPPAGE, MAX_ALLOWED_SLIPPAGE,
 };
 use sg_swap::pair::{
     CumulativePricesResponse, ExecuteMsg, InstantiateMsg, PairInfo, PoolResponse, QueryMsg,
@@ -388,11 +388,12 @@ pub fn provide_liquidity(
             .checked_sub(MINIMUM_LIQUIDITY_AMOUNT)
             .map_err(|_| ContractError::MinimumLiquidityAmountError {})?;
 
-        messages.extend(mint_token_message(
-            &config.pair_info.liquidity_token,
-            &env.contract.address,
-            MINIMUM_LIQUIDITY_AMOUNT,
-        )?);
+        // TODO: What is this for?
+        // messages.extend(mint_token_message(
+        //     &config.pair_info.liquidity_token,
+        //     &env.contract.address,
+        //     MINIMUM_LIQUIDITY_AMOUNT,
+        // )?);
 
         // share cannot become zero after minimum liquidity subtraction
         if share.is_zero() {
@@ -421,8 +422,15 @@ pub fn provide_liquidity(
 
     // Mint LP tokens for the sender or for the receiver (if set)
     let receiver = addr_opt_validate(deps.api, &receiver)?.unwrap_or_else(|| info.sender.clone());
-    messages.extend(mint_token_message(
+    // messages.extend(mint_token_message(
+    //     &config.pair_info.liquidity_token,
+    //     &receiver,
+    //     share,
+    // )?);
+    messages.extend(mint_nft_message(
         &config.pair_info.liquidity_token,
+        &env.contract.address,
+        "1",
         &receiver,
         share,
     )?);
