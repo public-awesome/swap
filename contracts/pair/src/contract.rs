@@ -17,9 +17,9 @@ use sg_swap::factory::{ConfigResponse as FactoryConfig, PairType};
 use sg_swap::fee_config::FeeConfig;
 use sg_swap::pair::{
     add_referral, assert_max_spread, check_asset_infos, check_assets, check_cw20_in_pool,
-    create_lp_token, get_share_in_assets, handle_referral, handle_reply, migration_check,
-    mint_nft_message, mint_token_message, save_tmp_staking_config, take_referral, ConfigResponse,
-    ContractError, Cw20HookMsg, DEFAULT_SLIPPAGE, MAX_ALLOWED_SLIPPAGE,
+    create_lp_collection, create_lp_token, get_share_in_assets, handle_referral, handle_reply,
+    migration_check, mint_nft_message, mint_token_message, save_tmp_staking_config, take_referral,
+    ConfigResponse, ContractError, Cw20HookMsg, DEFAULT_SLIPPAGE, MAX_ALLOWED_SLIPPAGE,
 };
 use sg_swap::pair::{
     CumulativePricesResponse, ExecuteMsg, InstantiateMsg, PairInfo, PoolResponse, QueryMsg,
@@ -61,6 +61,13 @@ pub fn instantiate(
         &asset_infos,
         &factory_addr,
     )?;
+    // let create_lp_collection_msg = create_lp_collection(
+    //     &deps.querier,
+    //     &env,
+    //     msg.token_code_id,
+    //     &asset_infos,
+    //     &factory_addr,
+    // )?;
 
     let config = Config {
         pair_info: PairInfo {
@@ -82,6 +89,7 @@ pub fn instantiate(
 
     save_tmp_staking_config(deps.storage, &msg.staking_config)?;
 
+    // Ok(Response::new().add_submessage(create_lp_collection_msg))
     Ok(Response::new().add_submessage(create_lp_token_msg))
 }
 
@@ -389,11 +397,11 @@ pub fn provide_liquidity(
             .map_err(|_| ContractError::MinimumLiquidityAmountError {})?;
 
         // TODO: What is this for?
-        // messages.extend(mint_token_message(
-        //     &config.pair_info.liquidity_token,
-        //     &env.contract.address,
-        //     MINIMUM_LIQUIDITY_AMOUNT,
-        // )?);
+        messages.extend(mint_token_message(
+            &config.pair_info.liquidity_token,
+            &env.contract.address,
+            MINIMUM_LIQUIDITY_AMOUNT,
+        )?);
 
         // share cannot become zero after minimum liquidity subtraction
         if share.is_zero() {
@@ -422,18 +430,18 @@ pub fn provide_liquidity(
 
     // Mint LP tokens for the sender or for the receiver (if set)
     let receiver = addr_opt_validate(deps.api, &receiver)?.unwrap_or_else(|| info.sender.clone());
-    // messages.extend(mint_token_message(
-    //     &config.pair_info.liquidity_token,
-    //     &receiver,
-    //     share,
-    // )?);
-    messages.extend(mint_nft_message(
+    messages.extend(mint_token_message(
         &config.pair_info.liquidity_token,
-        &env.contract.address,
-        "1",
         &receiver,
         share,
     )?);
+    // messages.extend(mint_nft_message(
+    //     &config.pair_info.liquidity_token,
+    //     &env.contract.address,
+    //     "1",
+    //     &receiver,
+    //     share,
+    // )?);
 
     // Accumulate prices for the assets in the pool
     if let Some((price0_cumulative_new, price1_cumulative_new, block_time)) =
