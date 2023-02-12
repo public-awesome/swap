@@ -1,0 +1,26 @@
+[package]
+name        = "sg721-pair"
+description = "Stargaze Swap Liquidity Pair NFT Collection"
+authors     = ["Shane Vitarana <s@noreply.stargaze.zone>"]
+version     = { workspace = true }
+edition     = { workspace = true }
+license     = { workspace = true }
+repository  = { workspace = true }
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# for more explicit tests, cargo test --features=backtraces
+backtraces = ["cosmwasm-std/backtraces"]
+# use library feature to disable all instantiate/execute/query exports
+library = []
+
+[dependencies]
+cosmwasm-schema = { workspace = true }
+cosmwasm-std    = { workspace = true }
+cw2             = { workspace = true }
+cw721           = { workspace = true }
+cw721-base      = { workspace = true, features = ["library"] }
+schemars        = { workspace = true }
+serde           = { workspace = true }
