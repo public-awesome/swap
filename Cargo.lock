@@ -1210,6 +1210,7 @@ dependencies = [
  "cw2 1.0.1",
  "cw20",
  "cw20-base",
+ "cw721-base 0.16.0 (git+https://github.com/CosmWasm/cw-nfts)",
  "serde",
  "sg-swap",
  "test-case",

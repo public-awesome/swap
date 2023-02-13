@@ -8,6 +8,7 @@ pub type UnbondingPeriod = u64;
 pub struct InstantiateMsg {
     /// address of cw20 contract token
     pub cw20_contract: String,
+    pub cw721_contract: String,
     pub tokens_per_power: Uint128,
     pub min_bond: Uint128,
     pub unbonding_periods: Vec<UnbondingPeriod>,

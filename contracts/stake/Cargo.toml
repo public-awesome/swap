@@ -21,6 +21,7 @@ sg-swap = { workspace = true }
 cw-utils        = { workspace = true }
 cw2             = { workspace = true }
 cw20            = { workspace = true }
+cw721-base      = { workspace = true, features = ["library"] }
 cw-controllers  = { workspace = true }
 cw-storage-plus = { workspace = true }
 # core cosmwasm

@@ -1,3 +1,5 @@
+use std::ops::Add;
+
 use cosmwasm_std::{
     to_binary, Addr, DepsMut, Env, QuerierWrapper, Reply, Response, StdError, StdResult, Storage,
     SubMsg, WasmMsg,
@@ -114,10 +116,8 @@ pub fn handle_reply(
     })?;
     match msg_id {
         INSTANTIATE_TOKEN_REPLY_ID => instantiate_lp_token_reply(deps, res, factory, pair_info),
-        // TODO: save a separate collection address in the pair info?
-        // this way, a pair can have either a token or a collection (or both)
         INSTANTIATE_COLLECTION_REPLY_ID => {
-            instantiate_lp_token_reply(deps, res, factory, pair_info)
+            instantiate_lp_collection_reply(deps, res, factory, pair_info)
         }
         INSTANTIATE_STAKE_REPLY_ID => instantiate_staking_reply(deps, res, pair_info),
         _ => Err(ContractError::UnknownReply(msg_id)),
@@ -144,10 +144,46 @@ pub fn instantiate_lp_token_reply(
 
     Ok(Response::new()
         .add_submessage(SubMsg::reply_on_success(
-            staking_cfg.into_init_msg(&deps.querier, res.contract_address, factory.to_string())?,
+            staking_cfg.into_init_msg(
+                &deps.querier,
+                res.contract_address,
+                Addr::unchecked("").to_string(),
+                factory.to_string(),
+            )?,
             INSTANTIATE_STAKE_REPLY_ID,
         ))
         .add_attribute("liquidity_token_addr", &pair_info.liquidity_token))
+}
+
+/// Sets the `pair_info`'s `liquidity_collection` field to the address of the newly instantiated
+/// lp collection contract, reads the temporary staking config and sends a sub-message to instantiate
+/// the staking contract.
+pub fn instantiate_lp_collection_reply(
+    deps: &DepsMut,
+    res: MsgInstantiateContractResponse,
+    factory: &Addr,
+    pair_info: &mut PairInfo,
+) -> Result<Response, ContractError> {
+    if pair_info.liquidity_collection != Addr::unchecked("") {
+        return Err(ContractError::AddrAlreadySet("liquidity_collection"));
+    }
+
+    pair_info.liquidity_collection = deps.api.addr_validate(&res.contract_address)?;
+
+    // now that we have the lp token, create the staking contract
+    let staking_cfg = TMP_STAKING_CONFIG.load(deps.storage)?;
+
+    Ok(Response::new()
+        .add_submessage(SubMsg::reply_on_success(
+            staking_cfg.into_init_msg(
+                &deps.querier,
+                Addr::unchecked("").to_string(),
+                res.contract_address,
+                factory.to_string(),
+            )?,
+            INSTANTIATE_STAKE_REPLY_ID,
+        ))
+        .add_attribute("liquidity_collection_addr", &pair_info.liquidity_collection))
 }
 
 /// Sets the `pair_info`'s `staking_addr` field to the address of the newly instantiated

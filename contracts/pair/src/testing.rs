@@ -1376,6 +1376,7 @@ fn test_accumulate_prices() {
                     contract_addr: Addr::unchecked("pair"),
                     staking_addr: Addr::unchecked("stake"),
                     liquidity_token: Addr::unchecked("lp_token"),
+                    liquidity_collection: Addr::unchecked("lp_collection"),
                     pair_type: PairType::Xyk {}, // Implemented in mock querier
                     fee_config: FeeConfig {
                         total_fee_bps: 0,

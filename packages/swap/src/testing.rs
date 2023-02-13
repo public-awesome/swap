@@ -213,6 +213,7 @@ fn query_sg_swap_pair_contract() {
             contract_addr: Addr::unchecked("pair0000"),
             staking_addr: Addr::unchecked("stake0000"),
             liquidity_token: Addr::unchecked("liquidity0000"),
+            liquidity_collection: Addr::unchecked("collection0000"),
             pair_type: PairType::Xyk {},
             fee_config: FeeConfig {
                 protocol_fee_bps: 0,
@@ -248,6 +249,7 @@ fn test_format_lp_token_name() {
             contract_addr: Addr::unchecked("pair0000"),
             staking_addr: Addr::unchecked("stake0000"),
             liquidity_token: Addr::unchecked("liquidity0000"),
+            liquidity_collection: Addr::unchecked("collection0000"),
             pair_type: PairType::Xyk {},
             fee_config: FeeConfig {
                 protocol_fee_bps: 0,

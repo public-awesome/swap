@@ -610,6 +610,7 @@ fn register() {
         contract_addr: Addr::unchecked("pair0000"),
         staking_addr: Addr::unchecked("stake0000"),
         liquidity_token: Addr::unchecked("liquidity0000"),
+        liquidity_collection: Addr::unchecked("collection0000"),
         pair_type: PairType::Xyk {},
         fee_config: FeeConfig {
             total_fee_bps: 0,
@@ -643,6 +644,7 @@ fn register() {
         pair_res,
         PairInfo {
             liquidity_token: Addr::unchecked("liquidity0000"),
+            liquidity_collection: Addr::unchecked("collection0000"),
             contract_addr: Addr::unchecked("pair0000"),
             staking_addr: Addr::unchecked("stake0000"),
             asset_infos: validated_asset_infos.clone(),
@@ -687,6 +689,7 @@ fn register() {
         contract_addr: Addr::unchecked("pair0001"),
         staking_addr: Addr::unchecked("stake0001"),
         liquidity_token: Addr::unchecked("liquidity0001"),
+        liquidity_collection: Addr::unchecked("collection0001"),
         pair_type: PairType::Xyk {},
         fee_config: FeeConfig {
             total_fee_bps: 0,
@@ -718,6 +721,7 @@ fn register() {
         vec![
             PairInfo {
                 liquidity_token: Addr::unchecked("liquidity0000"),
+                liquidity_collection: Addr::unchecked("collection0000"),
                 contract_addr: Addr::unchecked("pair0000"),
                 staking_addr: Addr::unchecked("stake0000"),
                 asset_infos: validated_asset_infos.clone(),
@@ -729,6 +733,7 @@ fn register() {
             },
             PairInfo {
                 liquidity_token: Addr::unchecked("liquidity0001"),
+                liquidity_collection: Addr::unchecked("collection0001"),
                 contract_addr: Addr::unchecked("pair0001"),
                 staking_addr: Addr::unchecked("stake0001"),
                 asset_infos: validated_asset_infos_2.clone(),
@@ -752,6 +757,7 @@ fn register() {
         pairs_res.pairs,
         vec![PairInfo {
             liquidity_token: Addr::unchecked("liquidity0000"),
+            liquidity_collection: Addr::unchecked("collection0000"),
             contract_addr: Addr::unchecked("pair0000"),
             staking_addr: Addr::unchecked("stake0000"),
             asset_infos: validated_asset_infos.clone(),
@@ -774,6 +780,7 @@ fn register() {
         pairs_res.pairs,
         vec![PairInfo {
             liquidity_token: Addr::unchecked("liquidity0001"),
+            liquidity_collection: Addr::unchecked("collection0001"),
             contract_addr: Addr::unchecked("pair0001"),
             staking_addr: Addr::unchecked("stake0001"),
             asset_infos: validated_asset_infos_2,
@@ -826,6 +833,7 @@ fn register() {
         pairs_res.pairs,
         vec![PairInfo {
             liquidity_token: Addr::unchecked("liquidity0000"),
+            liquidity_collection: Addr::unchecked("collection0000"),
             contract_addr: Addr::unchecked("pair0000"),
             staking_addr: Addr::unchecked("stake0000"),
             asset_infos: validated_asset_infos,

@@ -102,6 +102,7 @@ pub fn instantiate(
         pair_info: PairInfo {
             contract_addr: env.contract.address.clone(),
             liquidity_token: Addr::unchecked(""),
+            liquidity_collection: Addr::unchecked(""),
             staking_addr: Addr::unchecked(""),
             asset_infos,
             pair_type: PairType::Stable {},

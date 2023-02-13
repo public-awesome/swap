@@ -950,6 +950,7 @@ mod tests {
     const UNBONDING_PERIOD: u64 = UNBONDING_BLOCKS / 5;
     const UNBONDING_PERIOD_2: u64 = 2 * UNBONDING_PERIOD;
     const CW20_ADDRESS: &str = "wasm1234567890";
+    const CW721_ADDRESS: &str = "wasm1234567891";
     const DENOM: &str = "juno";
 
     #[test]
@@ -976,6 +977,7 @@ mod tests {
     ) {
         let msg = InstantiateMsg {
             cw20_contract: CW20_ADDRESS.to_owned(),
+            cw721_contract: CW721_ADDRESS.to_owned(),
             tokens_per_power,
             min_bond,
             unbonding_periods: stake_config,
