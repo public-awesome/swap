@@ -385,6 +385,7 @@ pub fn provide_liquidity(
         return Err(ContractError::InvalidZeroAmount {});
     }
 
+    // FIXME: have to store supply in collection contract now?
     let total_share = query_supply(&deps.querier, &config.pair_info.liquidity_token)?;
     let share = if total_share.is_zero() {
         // Initial share = collateral amount
@@ -398,11 +399,11 @@ pub fn provide_liquidity(
             .map_err(|_| ContractError::MinimumLiquidityAmountError {})?;
 
         // TODO: What is this for?
-        messages.extend(mint_token_message(
-            &config.pair_info.liquidity_token,
-            &env.contract.address,
-            MINIMUM_LIQUIDITY_AMOUNT,
-        )?);
+        // messages.extend(mint_token_message(
+        //     &config.pair_info.liquidity_token,
+        //     &env.contract.address,
+        //     MINIMUM_LIQUIDITY_AMOUNT,
+        // )?);
 
         // share cannot become zero after minimum liquidity subtraction
         if share.is_zero() {

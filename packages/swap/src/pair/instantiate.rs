@@ -1,5 +1,3 @@
-use std::ops::Add;
-
 use cosmwasm_std::{
     to_binary, Addr, DepsMut, Env, QuerierWrapper, Reply, Response, StdError, StdResult, Storage,
     SubMsg, WasmMsg,

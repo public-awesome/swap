@@ -1,6 +1,8 @@
-use cosmwasm_std::Empty;
+use cosmwasm_schema::{cw_serde, QueryResponses};
+use cosmwasm_std::{CustomMsg, Empty, Uint128};
 use cw2::set_contract_version;
 pub use cw721_base::{ContractError, InstantiateMsg, MinterResponse};
+use cw_storage_plus::Item;
 use sg_swap::metadata::PairMetadata;
 
 // Version info for migration
@@ -10,15 +12,32 @@ const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub type Extension = Option<PairMetadata>;
 
 pub type Sg721PairMetadataContract<'a> =
-    cw721_base::Cw721Contract<'a, Extension, Empty, Empty, Empty>;
+    cw721_base::Cw721Contract<'a, Extension, Empty, Empty, Sg721PairQueryMsg>;
 pub type ExecuteMsg = cw721_base::ExecuteMsg<Extension, Empty>;
-pub type QueryMsg = cw721_base::QueryMsg<Empty>;
+pub type QueryMsg = cw721_base::QueryMsg<Sg721PairQueryMsg>;
+
+pub const TOTAL_SHARES: Item<Uint128> = Item::new("total_shares");
+
+#[cw_serde]
+#[derive(QueryResponses)]
+pub enum Sg721PairQueryMsg {
+    #[returns(Uint128)]
+    TotalShares {},
+}
+
+impl Default for Sg721PairQueryMsg {
+    fn default() -> Self {
+        Sg721PairQueryMsg::TotalShares {}
+    }
+}
+
+impl CustomMsg for Sg721PairQueryMsg {}
 
 #[cfg(not(feature = "library"))]
 pub mod entry {
     use super::*;
 
-    use cosmwasm_std::entry_point;
+    use cosmwasm_std::{entry_point, to_binary};
     use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
 
     // This makes a conscious choice on the various generics used by the contract
@@ -34,6 +53,9 @@ pub mod entry {
         // Explicitly set contract name and version, otherwise set to cw721-base info
         set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)
             .map_err(ContractError::Std)?;
+
+        TOTAL_SHARES.save(deps.storage, &Uint128::zero())?;
+
         Ok(res)
     }
 
@@ -49,7 +71,16 @@ pub mod entry {
 
     #[entry_point]
     pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
-        Sg721PairMetadataContract::default().query(deps, env, msg)
+        match msg {
+            QueryMsg::Extension { msg } => match msg {
+                Sg721PairQueryMsg::TotalShares {} => to_binary(&query_total_shares(deps)?),
+            },
+            _ => Sg721PairMetadataContract::default().query(deps, env, msg),
+        }
+    }
+
+    pub fn query_total_shares(deps: Deps) -> StdResult<Uint128> {
+        TOTAL_SHARES.load(deps.storage)
     }
 }
 
