@@ -61,13 +61,13 @@ pub fn instantiate(
         &asset_infos,
         &factory_addr,
     )?;
-    // let create_lp_collection_msg = create_lp_collection(
-    //     &deps.querier,
-    //     &env,
-    //     msg.token_code_id,
-    //     &asset_infos,
-    //     &factory_addr,
-    // )?;
+    let create_lp_collection_msg = create_lp_collection(
+        &deps.querier,
+        &env,
+        msg.token_code_id,
+        &asset_infos,
+        &factory_addr,
+    )?;
 
     let config = Config {
         pair_info: PairInfo {

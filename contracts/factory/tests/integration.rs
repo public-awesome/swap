@@ -72,6 +72,7 @@ fn proper_initialization() {
     let msg = InstantiateMsg {
         pair_configs: pair_configs.clone(),
         token_code_id: 123,
+        collection_code_id: 456,
         fee_address: None,
         owner: owner.to_string(),
         max_referral_commission: Decimal::one(),
@@ -693,6 +694,7 @@ fn can_migrate_the_placeholder_to_a_factory_properly() {
     let factory_msg = InstantiateMsg {
         pair_configs: pair_configs.clone(),
         token_code_id: 123,
+        collection_code_id: 456,
         fee_address: None,
         owner: owner.to_string(),
         max_referral_commission: Decimal::one(),

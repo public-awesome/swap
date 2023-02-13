@@ -34,6 +34,8 @@ anyhow              = { workspace = true }
 cw-multi-test       = { workspace = true }
 cw20                = { workspace = true }
 cw20-base           = { workspace = true }
+cw721               = { workspace = true }
+cw721-base          = { workspace = true, features = ["library"] }
 sg-swap-factory     = { workspace = true }
 sg-swap-pair        = { workspace = true }
 sg-swap-pair-stable = { workspace = true }

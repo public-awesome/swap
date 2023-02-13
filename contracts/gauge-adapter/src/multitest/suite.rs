@@ -72,6 +72,16 @@ fn store_cw20(app: &mut App) -> u64 {
     app.store_code(contract)
 }
 
+fn store_cw721(app: &mut App) -> u64 {
+    let contract = Box::new(ContractWrapper::new(
+        cw721_base::entry::execute,
+        cw721_base::entry::instantiate,
+        cw721_base::entry::query,
+    ));
+
+    app.store_code(contract)
+}
+
 fn store_staking(app: &mut App) -> u64 {
     let contract = Box::new(ContractWrapper::new(
         sg_swap_stake::contract::execute,
@@ -156,6 +166,7 @@ impl SuiteBuilder {
         let owner = Addr::unchecked("owner");
 
         let cw20_code_id = store_cw20(&mut app);
+        let cw721_code_id = store_cw721(&mut app);
         let pair_code_id = store_pair(&mut app);
         let factory_code_id = store_factory(&mut app);
         let gauge_adapter_code_id = store_gauge_adapter(&mut app);
@@ -190,6 +201,7 @@ impl SuiteBuilder {
                         },
                     ],
                     token_code_id: cw20_code_id,
+                    collection_code_id: cw721_code_id,
                     fee_address: None,
                     owner: owner.to_string(),
                     max_referral_commission: Decimal::one(),

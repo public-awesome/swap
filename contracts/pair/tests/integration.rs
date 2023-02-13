@@ -33,6 +33,16 @@ fn store_token_code(app: &mut App) -> u64 {
     app.store_code(astro_token_contract)
 }
 
+fn store_collection_code(app: &mut App) -> u64 {
+    let astro_token_contract = Box::new(ContractWrapper::new_with_empty(
+        cw721_base::entry::execute,
+        cw721_base::entry::instantiate,
+        cw721_base::entry::query,
+    ));
+
+    app.store_code(astro_token_contract)
+}
+
 fn store_pair_code(app: &mut App) -> u64 {
     let pair_contract = Box::new(
         ContractWrapper::new_with_empty(
@@ -71,6 +81,7 @@ fn store_staking_code(app: &mut App) -> u64 {
 
 fn instantiate_factory(router: &mut App, owner: &Addr) -> Addr {
     let token_contract_code_id = store_token_code(router);
+    let collection_contract_code_id = store_collection_code(router);
     let pair_contract_code_id = store_pair_code(router);
     let staking_contract_code_id = store_staking_code(router);
     let factory_contract_code_id = store_factory_code(router);
@@ -86,6 +97,7 @@ fn instantiate_factory(router: &mut App, owner: &Addr) -> Addr {
             is_disabled: false,
         }],
         token_code_id: token_contract_code_id,
+        collection_code_id: collection_contract_code_id,
         fee_address: Some(owner.to_string()),
         owner: owner.to_string(),
         max_referral_commission: Decimal::one(),
@@ -458,6 +470,7 @@ fn test_compatibility_of_tokens_with_different_precision() {
     );
 
     let token_code_id = store_token_code(&mut app);
+    let collection_code_id = store_collection_code(&mut app);
 
     let x_amount = Uint128::new(100_000_000_000);
     let y_amount = Uint128::new(10_000_000_000_000);
@@ -536,6 +549,7 @@ fn test_compatibility_of_tokens_with_different_precision() {
             is_disabled: false,
         }],
         token_code_id,
+        collection_code_id,
         owner: owner.to_string(),
         max_referral_commission: Decimal::one(),
         default_stake_config: default_stake_config(staking_code_id),

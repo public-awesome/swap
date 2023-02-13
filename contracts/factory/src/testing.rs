@@ -65,6 +65,7 @@ fn proper_initialization() {
             },
         ],
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: owner.clone(),
         max_referral_commission: Decimal::one(),
@@ -89,6 +90,7 @@ fn proper_initialization() {
             is_disabled: false,
         }],
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: owner.clone(),
         max_referral_commission: Decimal::one(),
@@ -126,6 +128,7 @@ fn proper_initialization() {
             },
         ],
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: owner.clone(),
         max_referral_commission: Decimal::one(),
@@ -156,6 +159,7 @@ fn trading_starts_validation() {
     let mut msg = InstantiateMsg {
         pair_configs: vec![],
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: owner.to_string(),
         max_referral_commission: Decimal::one(),
@@ -201,6 +205,7 @@ fn update_config() {
     let msg = InstantiateMsg {
         pair_configs,
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: owner.to_string(),
         max_referral_commission: Decimal::one(),
@@ -257,6 +262,7 @@ fn update_owner() {
     let msg = InstantiateMsg {
         pair_configs: vec![],
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: owner.to_string(),
         max_referral_commission: Decimal::one(),
@@ -345,6 +351,7 @@ fn update_pair_config() {
     let msg = InstantiateMsg {
         pair_configs: pair_configs.clone(),
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: owner.to_string(),
         max_referral_commission: Decimal::one(),
@@ -459,6 +466,7 @@ fn create_pair() {
     let msg = InstantiateMsg {
         pair_configs: vec![pair_config.clone()],
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: "owner0000".to_string(),
         max_referral_commission: Decimal::one(),
@@ -561,6 +569,7 @@ fn register() {
             is_disabled: false,
         }],
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: owner.to_string(),
         max_referral_commission: Decimal::one(),

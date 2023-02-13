@@ -24,6 +24,13 @@ impl FactoryHelper {
 
         let cw20_token_code_id = router.store_code(astro_token_contract);
 
+        let collection_contract = Box::new(ContractWrapper::new_with_empty(
+            cw721_base::entry::execute,
+            cw721_base::entry::instantiate,
+            cw721_base::entry::query,
+        ));
+        let collection_code_id = router.store_code(collection_contract);
+
         let msg = cw20_base::msg::InstantiateMsg {
             name: String::from("Astro token"),
             symbol: String::from("ASTRO"),
@@ -88,6 +95,7 @@ impl FactoryHelper {
                 is_disabled: false,
             }],
             token_code_id: cw20_token_code_id,
+            collection_code_id,
             fee_address: None,
             owner: owner.to_string(),
             max_referral_commission: Decimal::one(),

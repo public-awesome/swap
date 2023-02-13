@@ -24,6 +24,7 @@ sg-swap-stake   = { workspace = true }
 sg-swap         = { workspace = true }
 
 [dev-dependencies]
+cw721-base      = { workspace = true, features = ["library"] }
 cw-multi-test   = { workspace = true }
 proptest        = { workspace = true }
 sg-swap-factory = { workspace = true }
