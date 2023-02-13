@@ -15,6 +15,7 @@ pub const CLAIMS: Claims = Claims::new("claims");
 pub struct Config {
     /// address of cw20 contract token to stake
     pub cw20_contract: Addr,
+    pub cw721_contract: Addr,
     /// address that instantiated the contract
     pub instantiator: Addr,
     pub tokens_per_power: Uint128,

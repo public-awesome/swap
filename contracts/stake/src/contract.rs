@@ -69,7 +69,10 @@ pub fn instantiate(
 
     let config = Config {
         instantiator: info.sender,
-        cw20_contract: deps.api.addr_validate(&msg.cw20_contract)?,
+        // cw20_contract: deps.api.addr_validate(&msg.cw20_contract)?,
+        // TODO: remove this
+        cw20_contract: Addr::unchecked("terra1hzh9vpxhsk82503se0vv5jj6etdvxu3nv8x7zu"),
+        cw721_contract: deps.api.addr_validate(&msg.cw721_contract)?,
         tokens_per_power: msg.tokens_per_power,
         min_bond,
         unbonding_periods: msg.unbonding_periods,
