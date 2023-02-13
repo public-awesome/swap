@@ -114,9 +114,11 @@ pub fn handle_reply(
     })?;
     match msg_id {
         INSTANTIATE_TOKEN_REPLY_ID => instantiate_lp_token_reply(deps, res, factory, pair_info),
-        // INSTANTIATE_COLLECTION_REPLY_ID => {
-        //     instantiate_lp_collection_reply(deps, res, factory, pair_info)
-        // }
+        // TODO: save a separate collection address in the pair info?
+        // this way, a pair can have either a token or a collection (or both)
+        INSTANTIATE_COLLECTION_REPLY_ID => {
+            instantiate_lp_token_reply(deps, res, factory, pair_info)
+        }
         INSTANTIATE_STAKE_REPLY_ID => instantiate_staking_reply(deps, res, pair_info),
         _ => Err(ContractError::UnknownReply(msg_id)),
     }

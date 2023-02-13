@@ -89,8 +89,8 @@ pub fn instantiate(
 
     save_tmp_staking_config(deps.storage, &msg.staking_config)?;
 
-    // Ok(Response::new().add_submessage(create_lp_collection_msg))
-    Ok(Response::new().add_submessage(create_lp_token_msg))
+    Ok(Response::new().add_submessage(create_lp_collection_msg))
+    // Ok(Response::new().add_submessage(create_lp_token_msg))
 }
 
 /// The entry point to the contract for processing replies from submessages.
