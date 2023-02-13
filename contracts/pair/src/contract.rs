@@ -64,7 +64,7 @@ pub fn instantiate(
     let create_lp_collection_msg = create_lp_collection(
         &deps.querier,
         &env,
-        msg.token_code_id,
+        msg.collection_code_id,
         &asset_infos,
         &factory_addr,
     )?;

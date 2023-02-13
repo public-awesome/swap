@@ -99,6 +99,8 @@ pub struct InstantiateMsg {
     pub asset_infos: Vec<AssetInfo>,
     /// The token contract code ID used for the tokens in the pool
     pub token_code_id: u64,
+    /// The collection contract code ID used for the tokens in the pool
+    pub collection_code_id: u64,
     /// The factory contract address
     pub factory_addr: String,
     /// Optional binary serialised parameters for custom pool types

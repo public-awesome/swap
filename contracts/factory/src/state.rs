@@ -16,6 +16,8 @@ pub struct Config {
     pub owner: Addr,
     /// CW20 token contract code identifier
     pub token_code_id: u64,
+    /// CW721 token contract code identifier
+    pub collection_code_id: u64,
     /// Contract address to send governance fees to (the protocol)
     pub fee_address: Option<Addr>,
     /// Maximum referral commission

@@ -1045,6 +1045,7 @@ fn create_pair_with_same_assets() {
     );
 
     let token_contract_code_id = store_token_code(&mut router);
+    let collection_contract_code_id = store_collection_code(&mut router);
     let pair_contract_code_id = store_pair_code(&mut router);
     let stake_code_id = store_stake_code(&mut router);
 
@@ -1054,6 +1055,7 @@ fn create_pair_with_same_assets() {
             AssetInfo::Native("uusd".to_string()),
         ],
         token_code_id: token_contract_code_id,
+        collection_code_id: collection_contract_code_id,
         factory_addr: String::from("factory"),
         init_params: None,
         staking_config: default_stake_config(stake_code_id).to_stake_config(),
@@ -1441,6 +1443,7 @@ fn update_pair_config() {
             AssetInfo::Native("uluna".to_string()),
         ],
         token_code_id: token_contract_code_id,
+        collection_code_id: collection_contract_code_id,
         factory_addr: factory_instance.to_string(),
         init_params: Some(
             to_binary(&StablePoolParams {

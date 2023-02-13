@@ -534,6 +534,7 @@ fn create_pair() {
                     factory_addr: String::from(MOCK_CONTRACT_ADDR),
                     asset_infos,
                     token_code_id: msg.token_code_id,
+                    collection_code_id: msg.collection_code_id,
                     init_params: None,
                     staking_config: default_stake_config().to_stake_config(),
                     trading_starts: mock_env().block.time.seconds(),

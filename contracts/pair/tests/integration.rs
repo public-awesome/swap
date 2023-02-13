@@ -785,6 +785,7 @@ fn create_pair_with_same_assets() {
     );
 
     let token_contract_code_id = store_token_code(&mut router);
+    let collection_contract_code_id = store_collection_code(&mut router);
     let pair_contract_code_id = store_pair_code(&mut router);
     let staking_contract_code_id = store_staking_code(&mut router);
 
@@ -794,6 +795,7 @@ fn create_pair_with_same_assets() {
             AssetInfo::Native("uusd".to_string()),
         ],
         token_code_id: token_contract_code_id,
+        collection_code_id: collection_contract_code_id,
         factory_addr: String::from("factory"),
         init_params: None,
         staking_config: default_stake_config(staking_contract_code_id).to_stake_config(),
@@ -1217,6 +1219,7 @@ fn wrong_number_of_assets() {
     let msg = InstantiateMsg {
         asset_infos: vec![AssetInfo::Native("uusd".to_string())],
         token_code_id: 123,
+        collection_code_id: 456,
         factory_addr: String::from("factory"),
         init_params: None,
         staking_config: default_stake_config(staking_contract_code_id).to_stake_config(),
@@ -1250,6 +1253,7 @@ fn wrong_number_of_assets() {
             native_asset_info("stone"),
         ],
         token_code_id: 123,
+        collection_code_id: 456,
         factory_addr: String::from("factory"),
         init_params: None,
         staking_config: default_stake_config(staking_contract_code_id).to_stake_config(),

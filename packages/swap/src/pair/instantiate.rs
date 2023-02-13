@@ -66,7 +66,7 @@ pub fn create_lp_token(
 pub fn create_lp_collection(
     querier: &QuerierWrapper,
     env: &Env,
-    token_code_id: u64,
+    collection_code_id: u64,
     asset_infos: &[AssetInfoValidated],
     factory_addr: &Addr,
 ) -> StdResult<SubMsg> {
@@ -78,7 +78,7 @@ pub fn create_lp_collection(
     Ok(SubMsg::reply_on_success(
         WasmMsg::Instantiate {
             admin: Some(factory_config.owner.to_string()),
-            code_id: token_code_id,
+            code_id: collection_code_id,
             msg: to_binary(&Cw721BaseInstantiateMsg {
                 name: token_name,
                 symbol: "uLP".to_string(),
