@@ -3,6 +3,7 @@ use crate::factory::{
     ConfigResponse as FactoryConfigResponse, FeeInfoResponse, PairType, PairsResponse,
     QueryMsg as FactoryQueryMsg,
 };
+use crate::metadata::Sg721PairQueryMsg;
 use crate::pair::{
     PairInfo, QueryMsg as PairQueryMsg, ReverseSimulationResponse, SimulationResponse,
 };
@@ -90,6 +91,16 @@ pub fn query_supply(
         querier.query_wasm_smart(contract_addr, &Cw20QueryMsg::TokenInfo {})?;
 
     Ok(res.total_supply)
+}
+
+/// Returns the total shares of a specific LP collection.
+///
+/// * **contract_addr** collection contract address.
+pub fn query_shares(
+    querier: &QuerierWrapper,
+    contract_addr: impl Into<String>,
+) -> StdResult<Uint128> {
+    querier.query_wasm_smart(contract_addr, &Sg721PairQueryMsg::TotalShares {})
 }
 
 /// Returns the number of decimals that a token has.

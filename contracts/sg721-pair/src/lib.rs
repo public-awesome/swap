@@ -1,9 +1,8 @@
-use cosmwasm_schema::{cw_serde, QueryResponses};
-use cosmwasm_std::{CustomMsg, Empty, Uint128};
+use cosmwasm_std::{Empty, Uint128};
 use cw2::set_contract_version;
 pub use cw721_base::{ContractError, InstantiateMsg, MinterResponse};
 use cw_storage_plus::Item;
-use sg_swap::metadata::PairMetadata;
+use sg_swap::metadata::{PairMetadata, Sg721PairQueryMsg};
 
 // Version info for migration
 const CONTRACT_NAME: &str = "crates.io:sg721-pair";
@@ -17,21 +16,6 @@ pub type ExecuteMsg = cw721_base::ExecuteMsg<Extension, Empty>;
 pub type QueryMsg = cw721_base::QueryMsg<Sg721PairQueryMsg>;
 
 pub const TOTAL_SHARES: Item<Uint128> = Item::new("total_shares");
-
-#[cw_serde]
-#[derive(QueryResponses)]
-pub enum Sg721PairQueryMsg {
-    #[returns(Uint128)]
-    TotalShares {},
-}
-
-impl Default for Sg721PairQueryMsg {
-    fn default() -> Self {
-        Sg721PairQueryMsg::TotalShares {}
-    }
-}
-
-impl CustomMsg for Sg721PairQueryMsg {}
 
 #[cfg(not(feature = "library"))]
 pub mod entry {

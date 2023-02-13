@@ -25,7 +25,7 @@ use sg_swap::pair::{
     CumulativePricesResponse, ExecuteMsg, InstantiateMsg, PairInfo, PoolResponse, QueryMsg,
     ReverseSimulationResponse, SimulationResponse, TWAP_PRECISION,
 };
-use sg_swap::querier::{query_factory_config, query_supply};
+use sg_swap::querier::{query_factory_config, query_shares, query_supply};
 use std::str::FromStr;
 use std::vec;
 
@@ -385,8 +385,8 @@ pub fn provide_liquidity(
         return Err(ContractError::InvalidZeroAmount {});
     }
 
-    // FIXME: have to store supply in collection contract now?
-    let total_share = query_supply(&deps.querier, &config.pair_info.liquidity_token)?;
+    // let total_share = query_supply(&deps.querier, &config.pair_info.liquidity_token)?;
+    let total_share = query_shares(&deps.querier, &config.pair_info.liquidity_collection)?;
     let share = if total_share.is_zero() {
         // Initial share = collateral amount
         let share: Uint128 = deposits[0]
