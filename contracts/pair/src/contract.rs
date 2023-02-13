@@ -1,4 +1,4 @@
-use crate::state::{Config, CONFIG};
+use crate::state::{increment_collection_index, Config, COLLECTION_INDEX, CONFIG};
 
 use cosmwasm_std::{
     attr, entry_point, from_binary, to_binary, Addr, Binary, CosmosMsg, Decimal, Decimal256, Deps,
@@ -87,6 +87,8 @@ pub fn instantiate(
     };
 
     CONFIG.save(deps.storage, &config)?;
+
+    COLLECTION_INDEX.save(deps.storage, &0u64)?;
 
     save_tmp_staking_config(deps.storage, &msg.staking_config)?;
 
@@ -405,6 +407,14 @@ pub fn provide_liquidity(
         //     MINIMUM_LIQUIDITY_AMOUNT,
         // )?);
 
+        messages.extend(mint_nft_message(
+            &config.pair_info.liquidity_collection,
+            &env.contract.address,
+            &increment_collection_index(deps.storage)?,
+            &env.contract.address,
+            share,
+        )?);
+
         // share cannot become zero after minimum liquidity subtraction
         if share.is_zero() {
             return Err(ContractError::MinimumLiquidityAmountError {});
@@ -432,18 +442,18 @@ pub fn provide_liquidity(
 
     // Mint LP tokens for the sender or for the receiver (if set)
     let receiver = addr_opt_validate(deps.api, &receiver)?.unwrap_or_else(|| info.sender.clone());
-    messages.extend(mint_token_message(
-        &config.pair_info.liquidity_token,
-        &receiver,
-        share,
-    )?);
-    // messages.extend(mint_nft_message(
+    // messages.extend(mint_token_message(
     //     &config.pair_info.liquidity_token,
-    //     &env.contract.address,
-    //     "1",
     //     &receiver,
     //     share,
     // )?);
+    messages.extend(mint_nft_message(
+        &config.pair_info.liquidity_collection,
+        &env.contract.address,
+        &increment_collection_index(deps.storage)?,
+        &receiver,
+        share,
+    )?);
 
     // Accumulate prices for the assets in the pool
     if let Some((price0_cumulative_new, price1_cumulative_new, block_time)) =
