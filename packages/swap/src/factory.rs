@@ -60,6 +60,8 @@ pub struct InstantiateMsg {
     pub pair_configs: Vec<PairConfig>,
     /// CW20 token contract code identifier
     pub token_code_id: u64,
+    /// CW721 collection contract code identifier
+    pub collection_code_id: u64,
     /// Contract address to send governance fees to (the protocol).
     /// If this is not specified, no protocol fees are paid out regardless of the fee configuration
     pub fee_address: Option<String>,

@@ -1,4 +1,4 @@
-use crate::state::{Config, CONFIG};
+use crate::state::{increment_collection_index, Config, COLLECTION_INDEX, CONFIG};
 
 use cosmwasm_std::{
     attr, entry_point, from_binary, to_binary, Addr, Binary, CosmosMsg, Decimal, Decimal256, Deps,
@@ -17,15 +17,15 @@ use sg_swap::factory::{ConfigResponse as FactoryConfig, PairType};
 use sg_swap::fee_config::FeeConfig;
 use sg_swap::pair::{
     add_referral, assert_max_spread, check_asset_infos, check_assets, check_cw20_in_pool,
-    create_lp_token, get_share_in_assets, handle_referral, handle_reply, migration_check,
-    mint_token_message, save_tmp_staking_config, take_referral, ConfigResponse, ContractError,
-    Cw20HookMsg, DEFAULT_SLIPPAGE, MAX_ALLOWED_SLIPPAGE,
+    create_lp_collection, create_lp_token, get_share_in_assets, handle_referral, handle_reply,
+    migration_check, mint_nft_message, mint_token_message, save_tmp_staking_config, take_referral,
+    ConfigResponse, ContractError, Cw20HookMsg, DEFAULT_SLIPPAGE, MAX_ALLOWED_SLIPPAGE,
 };
 use sg_swap::pair::{
     CumulativePricesResponse, ExecuteMsg, InstantiateMsg, PairInfo, PoolResponse, QueryMsg,
     ReverseSimulationResponse, SimulationResponse, TWAP_PRECISION,
 };
-use sg_swap::querier::{query_factory_config, query_supply};
+use sg_swap::querier::{query_factory_config, query_shares, query_supply};
 use std::str::FromStr;
 use std::vec;
 
@@ -61,11 +61,19 @@ pub fn instantiate(
         &asset_infos,
         &factory_addr,
     )?;
+    let create_lp_collection_msg = create_lp_collection(
+        &deps.querier,
+        &env,
+        msg.collection_code_id,
+        &asset_infos,
+        &factory_addr,
+    )?;
 
     let config = Config {
         pair_info: PairInfo {
             contract_addr: env.contract.address,
             liquidity_token: Addr::unchecked(""),
+            liquidity_collection: Addr::unchecked(""),
             staking_addr: Addr::unchecked(""),
             asset_infos,
             pair_type: PairType::Xyk {},
@@ -80,9 +88,12 @@ pub fn instantiate(
 
     CONFIG.save(deps.storage, &config)?;
 
+    COLLECTION_INDEX.save(deps.storage, &0u64)?;
+
     save_tmp_staking_config(deps.storage, &msg.staking_config)?;
 
-    Ok(Response::new().add_submessage(create_lp_token_msg))
+    Ok(Response::new().add_submessage(create_lp_collection_msg))
+    // Ok(Response::new().add_submessage(create_lp_token_msg))
 }
 
 /// The entry point to the contract for processing replies from submessages.
@@ -376,7 +387,8 @@ pub fn provide_liquidity(
         return Err(ContractError::InvalidZeroAmount {});
     }
 
-    let total_share = query_supply(&deps.querier, &config.pair_info.liquidity_token)?;
+    // let total_share = query_supply(&deps.querier, &config.pair_info.liquidity_token)?;
+    let total_share = query_shares(&deps.querier, &config.pair_info.liquidity_collection)?;
     let share = if total_share.is_zero() {
         // Initial share = collateral amount
         let share: Uint128 = deposits[0]
@@ -388,10 +400,19 @@ pub fn provide_liquidity(
             .checked_sub(MINIMUM_LIQUIDITY_AMOUNT)
             .map_err(|_| ContractError::MinimumLiquidityAmountError {})?;
 
-        messages.extend(mint_token_message(
-            &config.pair_info.liquidity_token,
+        // TODO: What is this for?
+        // messages.extend(mint_token_message(
+        //     &config.pair_info.liquidity_token,
+        //     &env.contract.address,
+        //     MINIMUM_LIQUIDITY_AMOUNT,
+        // )?);
+
+        messages.extend(mint_nft_message(
+            &config.pair_info.liquidity_collection,
             &env.contract.address,
-            MINIMUM_LIQUIDITY_AMOUNT,
+            &increment_collection_index(deps.storage)?,
+            &env.contract.address,
+            share,
         )?);
 
         // share cannot become zero after minimum liquidity subtraction
@@ -421,8 +442,15 @@ pub fn provide_liquidity(
 
     // Mint LP tokens for the sender or for the receiver (if set)
     let receiver = addr_opt_validate(deps.api, &receiver)?.unwrap_or_else(|| info.sender.clone());
-    messages.extend(mint_token_message(
-        &config.pair_info.liquidity_token,
+    // messages.extend(mint_token_message(
+    //     &config.pair_info.liquidity_token,
+    //     &receiver,
+    //     share,
+    // )?);
+    messages.extend(mint_nft_message(
+        &config.pair_info.liquidity_collection,
+        &env.contract.address,
+        &increment_collection_index(deps.storage)?,
         &receiver,
         share,
     )?);

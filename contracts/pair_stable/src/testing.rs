@@ -70,6 +70,7 @@ fn proper_initialization() {
             AssetInfo::Token("asset0000".to_string()),
         ],
         token_code_id: 10u64,
+        collection_code_id: 11u64,
         init_params: Some(
             to_binary(&StablePoolParams {
                 amp: 100,
@@ -157,6 +158,7 @@ fn provide_liquidity() {
             AssetInfo::Token("asset0000".to_string()),
         ],
         token_code_id: 10u64,
+        collection_code_id: 11u64,
         factory_addr: String::from("factory"),
         init_params: Some(
             to_binary(&StablePoolParams {
@@ -522,6 +524,7 @@ fn withdraw_liquidity() {
             AssetInfo::Token("asset0000".to_string()),
         ],
         token_code_id: 10u64,
+        collection_code_id: 11u64,
         factory_addr: String::from("factory"),
         init_params: Some(
             to_binary(&StablePoolParams {

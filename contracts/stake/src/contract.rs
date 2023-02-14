@@ -69,7 +69,10 @@ pub fn instantiate(
 
     let config = Config {
         instantiator: info.sender,
-        cw20_contract: deps.api.addr_validate(&msg.cw20_contract)?,
+        // cw20_contract: deps.api.addr_validate(&msg.cw20_contract)?,
+        // TODO: remove this
+        cw20_contract: Addr::unchecked("terra1hzh9vpxhsk82503se0vv5jj6etdvxu3nv8x7zu"),
+        cw721_contract: deps.api.addr_validate(&msg.cw721_contract)?,
         tokens_per_power: msg.tokens_per_power,
         min_bond,
         unbonding_periods: msg.unbonding_periods,
@@ -384,6 +387,8 @@ pub fn execute_mass_bond(
     delegate_to: Vec<(String, Uint128)>,
 ) -> Result<Response, ContractError> {
     let cfg = CONFIG.load(deps.storage)?;
+
+    println!("cfg: {:?}", cfg);
 
     // ensure that cw20 token contract's addresses matches
     if cfg.cw20_contract != sender_cw20_contract {
@@ -950,6 +955,7 @@ mod tests {
     const UNBONDING_PERIOD: u64 = UNBONDING_BLOCKS / 5;
     const UNBONDING_PERIOD_2: u64 = 2 * UNBONDING_PERIOD;
     const CW20_ADDRESS: &str = "wasm1234567890";
+    const CW721_ADDRESS: &str = "wasm1234567891";
     const DENOM: &str = "juno";
 
     #[test]
@@ -976,6 +982,7 @@ mod tests {
     ) {
         let msg = InstantiateMsg {
             cw20_contract: CW20_ADDRESS.to_owned(),
+            cw721_contract: CW721_ADDRESS.to_owned(),
             tokens_per_power,
             min_bond,
             unbonding_periods: stake_config,

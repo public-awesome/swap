@@ -79,6 +79,14 @@ fn token_contract() -> Box<dyn Contract<Empty>> {
     ))
 }
 
+fn collection_contract() -> Box<dyn Contract<Empty>> {
+    Box::new(ContractWrapper::new_with_empty(
+        cw20_base::contract::execute,
+        cw20_base::contract::instantiate,
+        cw20_base::contract::query,
+    ))
+}
+
 fn pair_contract() -> Box<dyn Contract<Empty>> {
     Box::new(ContractWrapper::new_with_empty(execute, instantiate, query).with_reply_empty(reply))
 }
@@ -136,6 +144,7 @@ impl Helper {
             .collect();
 
         let token_code_id = app.store_code(token_contract());
+        let collection_code_id = app.store_code(collection_contract());
 
         test_coins.into_iter().for_each(|coin| {
             if let Some((name, decimals)) = coin.cw20_init_data() {
@@ -160,6 +169,7 @@ impl Helper {
                 is_disabled: false,
             }],
             token_code_id,
+            collection_code_id,
             owner: owner.to_string(),
             max_referral_commission: Decimal::one(),
             default_stake_config: DefaultStakeConfig {

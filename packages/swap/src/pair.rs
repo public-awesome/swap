@@ -38,6 +38,8 @@ pub struct PairInfo {
     pub contract_addr: Addr,
     /// Pair LP token address
     pub liquidity_token: Addr,
+    /// Pair LP NFT address
+    pub liquidity_collection: Addr,
     /// Staking contract address
     pub staking_addr: Addr,
     /// The pool type (xyk, stableswap etc) available in [`PairType`]
@@ -99,6 +101,8 @@ pub struct InstantiateMsg {
     pub asset_infos: Vec<AssetInfo>,
     /// The token contract code ID used for the tokens in the pool
     pub token_code_id: u64,
+    /// The collection contract code ID used for the tokens in the pool
+    pub collection_code_id: u64,
     /// The factory contract address
     pub factory_addr: String,
     /// Optional binary serialised parameters for custom pool types
@@ -136,6 +140,7 @@ impl StakeConfig {
         self,
         querier: &QuerierWrapper,
         lp_token_address: String,
+        lp_collection_address: String,
         factory_addr: String,
     ) -> StdResult<WasmMsg> {
         // Add factory's owner as owner of staking contract (DAO) to allow migration
@@ -146,7 +151,8 @@ impl StakeConfig {
         Ok(WasmMsg::Instantiate {
             code_id: self.staking_code_id,
             msg: to_binary(&crate::stake::InstantiateMsg {
-                cw20_contract: lp_token_address, // address of LP token
+                cw20_contract: lp_token_address,       // address of LP token
+                cw721_contract: lp_collection_address, // address of LP collection
                 tokens_per_power: self.tokens_per_power,
                 min_bond: self.min_bond,
                 unbonding_periods: self.unbonding_periods,

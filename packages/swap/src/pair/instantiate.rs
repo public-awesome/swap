@@ -4,6 +4,7 @@ use cosmwasm_std::{
 };
 use cw20::MinterResponse;
 use cw20_base::msg::InstantiateMsg as TokenInstantiateMsg;
+use cw721_base::msg::InstantiateMsg as Cw721BaseInstantiateMsg;
 use cw_storage_plus::Item;
 use cw_utils::MsgInstantiateContractResponse;
 
@@ -21,6 +22,8 @@ pub const LP_TOKEN_PRECISION: u8 = 6;
 const INSTANTIATE_TOKEN_REPLY_ID: u64 = 1;
 /// A `reply` call code ID used for staking contract instantiation sub-message.
 const INSTANTIATE_STAKE_REPLY_ID: u64 = 2;
+/// A `reply` call code ID used for collection instantiation sub-message.
+const INSTANTIATE_COLLECTION_REPLY_ID: u64 = 3;
 
 /// Returns a sub-message to instantiate a new LP token.
 /// It uses [`INSTANTIATE_TOKEN_REPLY_ID`] as id.
@@ -58,6 +61,36 @@ pub fn create_lp_token(
     ))
 }
 
+/// Returns a sub-message to instantiate a new LP token.
+/// It uses [`INSTANTIATE_COLLECTION_REPLY_ID`] as id.
+pub fn create_lp_collection(
+    querier: &QuerierWrapper,
+    env: &Env,
+    collection_code_id: u64,
+    asset_infos: &[AssetInfoValidated],
+    factory_addr: &Addr,
+) -> StdResult<SubMsg> {
+    let token_name = format_lp_token_name(asset_infos, querier)?;
+
+    let factory_config: FactoryConfigResponse =
+        querier.query_wasm_smart(factory_addr, &FactoryQueryMsg::Config {})?;
+
+    Ok(SubMsg::reply_on_success(
+        WasmMsg::Instantiate {
+            admin: Some(factory_config.owner.to_string()),
+            code_id: collection_code_id,
+            msg: to_binary(&Cw721BaseInstantiateMsg {
+                name: token_name,
+                symbol: "uLP".to_string(),
+                minter: env.contract.address.to_string(),
+            })?,
+            funds: vec![],
+            label: "Stargaze Swap LP token".to_owned(),
+        },
+        INSTANTIATE_COLLECTION_REPLY_ID,
+    ))
+}
+
 /// Saves this `stake_config` to the storage temporarily
 /// until the reply for creating the lp token arrives.
 pub fn save_tmp_staking_config(
@@ -81,6 +114,9 @@ pub fn handle_reply(
     })?;
     match msg_id {
         INSTANTIATE_TOKEN_REPLY_ID => instantiate_lp_token_reply(deps, res, factory, pair_info),
+        INSTANTIATE_COLLECTION_REPLY_ID => {
+            instantiate_lp_collection_reply(deps, res, factory, pair_info)
+        }
         INSTANTIATE_STAKE_REPLY_ID => instantiate_staking_reply(deps, res, pair_info),
         _ => Err(ContractError::UnknownReply(msg_id)),
     }
@@ -106,10 +142,46 @@ pub fn instantiate_lp_token_reply(
 
     Ok(Response::new()
         .add_submessage(SubMsg::reply_on_success(
-            staking_cfg.into_init_msg(&deps.querier, res.contract_address, factory.to_string())?,
+            staking_cfg.into_init_msg(
+                &deps.querier,
+                res.contract_address,
+                Addr::unchecked("").to_string(),
+                factory.to_string(),
+            )?,
             INSTANTIATE_STAKE_REPLY_ID,
         ))
         .add_attribute("liquidity_token_addr", &pair_info.liquidity_token))
+}
+
+/// Sets the `pair_info`'s `liquidity_collection` field to the address of the newly instantiated
+/// lp collection contract, reads the temporary staking config and sends a sub-message to instantiate
+/// the staking contract.
+pub fn instantiate_lp_collection_reply(
+    deps: &DepsMut,
+    res: MsgInstantiateContractResponse,
+    factory: &Addr,
+    pair_info: &mut PairInfo,
+) -> Result<Response, ContractError> {
+    if pair_info.liquidity_collection != Addr::unchecked("") {
+        return Err(ContractError::AddrAlreadySet("liquidity_collection"));
+    }
+
+    pair_info.liquidity_collection = deps.api.addr_validate(&res.contract_address)?;
+
+    // now that we have the lp token, create the staking contract
+    let staking_cfg = TMP_STAKING_CONFIG.load(deps.storage)?;
+
+    Ok(Response::new()
+        .add_submessage(SubMsg::reply_on_success(
+            staking_cfg.into_init_msg(
+                &deps.querier,
+                Addr::unchecked("").to_string(),
+                res.contract_address,
+                factory.to_string(),
+            )?,
+            INSTANTIATE_STAKE_REPLY_ID,
+        ))
+        .add_attribute("liquidity_collection_addr", &pair_info.liquidity_collection))
 }
 
 /// Sets the `pair_info`'s `staking_addr` field to the address of the newly instantiated

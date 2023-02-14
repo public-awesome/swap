@@ -65,6 +65,7 @@ fn proper_initialization() {
             },
         ],
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: owner.clone(),
         max_referral_commission: Decimal::one(),
@@ -89,6 +90,7 @@ fn proper_initialization() {
             is_disabled: false,
         }],
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: owner.clone(),
         max_referral_commission: Decimal::one(),
@@ -126,6 +128,7 @@ fn proper_initialization() {
             },
         ],
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: owner.clone(),
         max_referral_commission: Decimal::one(),
@@ -156,6 +159,7 @@ fn trading_starts_validation() {
     let mut msg = InstantiateMsg {
         pair_configs: vec![],
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: owner.to_string(),
         max_referral_commission: Decimal::one(),
@@ -201,6 +205,7 @@ fn update_config() {
     let msg = InstantiateMsg {
         pair_configs,
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: owner.to_string(),
         max_referral_commission: Decimal::one(),
@@ -257,6 +262,7 @@ fn update_owner() {
     let msg = InstantiateMsg {
         pair_configs: vec![],
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: owner.to_string(),
         max_referral_commission: Decimal::one(),
@@ -345,6 +351,7 @@ fn update_pair_config() {
     let msg = InstantiateMsg {
         pair_configs: pair_configs.clone(),
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: owner.to_string(),
         max_referral_commission: Decimal::one(),
@@ -459,6 +466,7 @@ fn create_pair() {
     let msg = InstantiateMsg {
         pair_configs: vec![pair_config.clone()],
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: "owner0000".to_string(),
         max_referral_commission: Decimal::one(),
@@ -526,6 +534,7 @@ fn create_pair() {
                     factory_addr: String::from(MOCK_CONTRACT_ADDR),
                     asset_infos,
                     token_code_id: msg.token_code_id,
+                    collection_code_id: msg.collection_code_id,
                     init_params: None,
                     staking_config: default_stake_config().to_stake_config(),
                     trading_starts: mock_env().block.time.seconds(),
@@ -561,6 +570,7 @@ fn register() {
             is_disabled: false,
         }],
         token_code_id: 123u64,
+        collection_code_id: 456u64,
         fee_address: None,
         owner: owner.to_string(),
         max_referral_commission: Decimal::one(),
@@ -600,6 +610,7 @@ fn register() {
         contract_addr: Addr::unchecked("pair0000"),
         staking_addr: Addr::unchecked("stake0000"),
         liquidity_token: Addr::unchecked("liquidity0000"),
+        liquidity_collection: Addr::unchecked("collection0000"),
         pair_type: PairType::Xyk {},
         fee_config: FeeConfig {
             total_fee_bps: 0,
@@ -633,6 +644,7 @@ fn register() {
         pair_res,
         PairInfo {
             liquidity_token: Addr::unchecked("liquidity0000"),
+            liquidity_collection: Addr::unchecked("collection0000"),
             contract_addr: Addr::unchecked("pair0000"),
             staking_addr: Addr::unchecked("stake0000"),
             asset_infos: validated_asset_infos.clone(),
@@ -677,6 +689,7 @@ fn register() {
         contract_addr: Addr::unchecked("pair0001"),
         staking_addr: Addr::unchecked("stake0001"),
         liquidity_token: Addr::unchecked("liquidity0001"),
+        liquidity_collection: Addr::unchecked("collection0001"),
         pair_type: PairType::Xyk {},
         fee_config: FeeConfig {
             total_fee_bps: 0,
@@ -708,6 +721,7 @@ fn register() {
         vec![
             PairInfo {
                 liquidity_token: Addr::unchecked("liquidity0000"),
+                liquidity_collection: Addr::unchecked("collection0000"),
                 contract_addr: Addr::unchecked("pair0000"),
                 staking_addr: Addr::unchecked("stake0000"),
                 asset_infos: validated_asset_infos.clone(),
@@ -719,6 +733,7 @@ fn register() {
             },
             PairInfo {
                 liquidity_token: Addr::unchecked("liquidity0001"),
+                liquidity_collection: Addr::unchecked("collection0001"),
                 contract_addr: Addr::unchecked("pair0001"),
                 staking_addr: Addr::unchecked("stake0001"),
                 asset_infos: validated_asset_infos_2.clone(),
@@ -742,6 +757,7 @@ fn register() {
         pairs_res.pairs,
         vec![PairInfo {
             liquidity_token: Addr::unchecked("liquidity0000"),
+            liquidity_collection: Addr::unchecked("collection0000"),
             contract_addr: Addr::unchecked("pair0000"),
             staking_addr: Addr::unchecked("stake0000"),
             asset_infos: validated_asset_infos.clone(),
@@ -764,6 +780,7 @@ fn register() {
         pairs_res.pairs,
         vec![PairInfo {
             liquidity_token: Addr::unchecked("liquidity0001"),
+            liquidity_collection: Addr::unchecked("collection0001"),
             contract_addr: Addr::unchecked("pair0001"),
             staking_addr: Addr::unchecked("stake0001"),
             asset_infos: validated_asset_infos_2,
@@ -816,6 +833,7 @@ fn register() {
         pairs_res.pairs,
         vec![PairInfo {
             liquidity_token: Addr::unchecked("liquidity0000"),
+            liquidity_collection: Addr::unchecked("collection0000"),
             contract_addr: Addr::unchecked("pair0000"),
             staking_addr: Addr::unchecked("stake0000"),
             asset_infos: validated_asset_infos,

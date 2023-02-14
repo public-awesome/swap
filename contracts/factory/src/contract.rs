@@ -67,6 +67,7 @@ pub fn instantiate(
     let config = Config {
         owner: deps.api.addr_validate(&msg.owner)?,
         token_code_id: msg.token_code_id,
+        collection_code_id: msg.collection_code_id,
         fee_address: addr_opt_validate(deps.api, &msg.fee_address)?,
         max_referral_commission: msg.max_referral_commission,
         default_stake_config: msg.default_stake_config,
@@ -441,6 +442,7 @@ pub fn execute_create_pair(
             msg: to_binary(&PairInstantiateMsg {
                 asset_infos: asset_infos.iter().cloned().map(Into::into).collect(),
                 token_code_id: config.token_code_id,
+                collection_code_id: config.collection_code_id,
                 factory_addr: env.contract.address.to_string(),
                 init_params,
                 staking_config: config

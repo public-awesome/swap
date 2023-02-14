@@ -42,6 +42,16 @@ pub(super) fn contract_token() -> Box<dyn Contract<Empty>> {
     Box::new(contract)
 }
 
+pub(super) fn contract_collection() -> Box<dyn Contract<Empty>> {
+    let contract = ContractWrapper::new_with_empty(
+        cw721_base::entry::execute,
+        cw721_base::entry::instantiate,
+        cw721_base::entry::query,
+    );
+
+    Box::new(contract)
+}
+
 pub(super) fn juno_power(amount: u128) -> Vec<(AssetInfoValidated, u128)> {
     vec![(AssetInfoValidated::Native("juno".to_string()), amount)]
 }
@@ -163,6 +173,22 @@ impl SuiteBuilder {
             )
             .unwrap();
 
+        let collection_id = app.store_code(contract_collection());
+        let collection_contract = app
+            .instantiate_contract(
+                collection_id,
+                admin.clone(),
+                &cw721_base::msg::InstantiateMsg {
+                    name: "collection".to_owned(),
+                    symbol: "COL".to_owned(),
+                    minter: "minter".to_owned(),
+                },
+                &[],
+                "collection",
+                None,
+            )
+            .unwrap();
+
         let stake_id = app.store_code(contract_stake());
         let stake_contract = app
             .instantiate_contract(
@@ -170,6 +196,7 @@ impl SuiteBuilder {
                 admin,
                 &InstantiateMsg {
                     cw20_contract: token_contract.to_string(),
+                    cw721_contract: collection_contract.to_string(),
                     tokens_per_power: self.tokens_per_power,
                     min_bond: self.min_bond,
                     unbonding_periods: self.unbonding_periods,

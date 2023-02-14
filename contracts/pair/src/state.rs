@@ -1,5 +1,5 @@
 use cosmwasm_schema::cw_serde;
-use cosmwasm_std::{Addr, Uint128};
+use cosmwasm_std::{Addr, DepsMut, StdResult, Storage, Uint128};
 use cw_storage_plus::Item;
 use sg_swap::pair::PairInfo;
 
@@ -22,3 +22,12 @@ pub struct Config {
 
 /// Stores the config struct at the given key
 pub const CONFIG: Item<Config> = Item::new("config");
+
+pub const COLLECTION_INDEX: Item<u64> = Item::new("collection_index");
+
+pub fn increment_collection_index(store: &mut dyn Storage) -> StdResult<String> {
+    let mut index = COLLECTION_INDEX.load(store)?;
+    index += 1;
+    COLLECTION_INDEX.save(store, &index)?;
+    Ok(index.to_string())
+}

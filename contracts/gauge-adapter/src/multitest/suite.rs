@@ -3,6 +3,7 @@ use anyhow::Result as AnyResult;
 use cosmwasm_std::{coin, to_binary, Addr, Coin, CosmosMsg, Decimal, Uint128};
 use cw20::{BalanceResponse, Cw20ExecuteMsg, Cw20QueryMsg, MinterResponse};
 use cw20_base::msg::InstantiateMsg as Cw20BaseInstantiateMsg;
+use cw721::Cw721ExecuteMsg;
 use cw_multi_test::{App, AppResponse, BankSudo, ContractWrapper, Executor, SudoMsg};
 
 use cw_placeholder::msg::InstantiateMsg as PlaceholderContractInstantiateMsg;
@@ -67,6 +68,16 @@ fn store_cw20(app: &mut App) -> u64 {
         cw20_base::contract::execute,
         cw20_base::contract::instantiate,
         cw20_base::contract::query,
+    ));
+
+    app.store_code(contract)
+}
+
+fn store_cw721(app: &mut App) -> u64 {
+    let contract = Box::new(ContractWrapper::new(
+        cw721_base::entry::execute,
+        cw721_base::entry::instantiate,
+        cw721_base::entry::query,
     ));
 
     app.store_code(contract)
@@ -156,6 +167,7 @@ impl SuiteBuilder {
         let owner = Addr::unchecked("owner");
 
         let cw20_code_id = store_cw20(&mut app);
+        let cw721_code_id = store_cw721(&mut app);
         let pair_code_id = store_pair(&mut app);
         let factory_code_id = store_factory(&mut app);
         let gauge_adapter_code_id = store_gauge_adapter(&mut app);
@@ -190,6 +202,7 @@ impl SuiteBuilder {
                         },
                     ],
                     token_code_id: cw20_code_id,
+                    collection_code_id: cw721_code_id,
                     fee_address: None,
                     owner: owner.to_string(),
                     max_referral_commission: Decimal::one(),
@@ -621,6 +634,31 @@ impl StakingContract {
             &Cw20ExecuteMsg::Send {
                 contract: self.0.to_string(),
                 amount: amount.into(),
+                msg: to_binary(&ReceiveDelegationMsg::Delegate {
+                    unbonding_period,
+                    delegate_as: None,
+                })
+                .unwrap(),
+            },
+            &[],
+        )
+    }
+
+    pub fn stake_nft(
+        &self,
+        app: &mut App,
+        owner: &str,
+        unbonding_period: u64,
+        collection: Addr,
+        token_id: String,
+    ) -> AnyResult<AppResponse> {
+        app.execute_contract(
+            Addr::unchecked(owner),
+            collection,
+            // TODO: add `ReceiveNft`
+            &Cw721ExecuteMsg::SendNft {
+                contract: self.0.to_string(),
+                token_id,
                 msg: to_binary(&ReceiveDelegationMsg::Delegate {
                     unbonding_period,
                     delegate_as: None,

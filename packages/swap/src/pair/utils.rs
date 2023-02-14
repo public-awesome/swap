@@ -2,13 +2,17 @@ use std::str::FromStr;
 
 use super::error::ContractError;
 
-use crate::asset::{Asset, AssetInfo, AssetInfoValidated, AssetValidated};
+use crate::{
+    asset::{Asset, AssetInfo, AssetInfoValidated, AssetValidated},
+    metadata::PairMetadata,
+};
 
 use cosmwasm_std::{
-    from_slice, wasm_execute, Addr, Api, CosmosMsg, Decimal, Fraction, QuerierWrapper, StdError,
-    StdResult, Uint128,
+    from_slice, wasm_execute, Addr, Api, CosmosMsg, Decimal, Empty, Fraction, QuerierWrapper,
+    StdError, StdResult, Uint128,
 };
 use cw20::Cw20ExecuteMsg;
+use cw721_base::ExecuteMsg as Cw721BaseExecuteMsg;
 use itertools::Itertools;
 
 /// The default swap slippage
@@ -144,6 +148,37 @@ pub fn mint_token_message(
         &Cw20ExecuteMsg::Mint {
             recipient: recipient.to_string(),
             amount,
+        },
+        vec![],
+    )?
+    .into()])
+}
+
+/// Mint LP NFTs for a beneficiary
+///
+/// * **recipient** LP NFT recipient.
+///
+/// * **amount** amount of LP shares that will be allocated for the NFT.
+///
+pub fn mint_nft_message(
+    liquidity_collection: &Addr,
+    pair_contract: &Addr,
+    token_id: &str,
+    recipient: &Addr,
+    amount: Uint128,
+) -> Result<Vec<CosmosMsg>, ContractError> {
+    let extension = Some(PairMetadata {
+        pair_contract: pair_contract.clone(),
+        shares: amount,
+    });
+
+    Ok(vec![wasm_execute(
+        liquidity_collection,
+        &Cw721BaseExecuteMsg::<Option<PairMetadata>, Empty>::Mint {
+            token_id: token_id.to_string(),
+            owner: recipient.to_string(),
+            token_uri: None,
+            extension,
         },
         vec![],
     )?

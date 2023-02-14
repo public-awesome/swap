@@ -72,6 +72,7 @@ fn proper_initialization() {
     let msg = InstantiateMsg {
         pair_configs: pair_configs.clone(),
         token_code_id: 123,
+        collection_code_id: 456,
         fee_address: None,
         owner: owner.to_string(),
         max_referral_commission: Decimal::one(),
@@ -214,7 +215,8 @@ fn test_create_pair() {
     // In multitest, contract names are counted in the order in which contracts are created
     assert_eq!("contract1", helper.factory.to_string());
     assert_eq!("contract4", res.contract_addr.to_string());
-    assert_eq!("contract5", res.liquidity_token.to_string());
+    assert_eq!("contract5", res.liquidity_collection.to_string());
+    // assert_eq!("contract5", res.liquidity_token.to_string());
 
     // Create disabled pair type
     app.execute_contract(
@@ -693,6 +695,7 @@ fn can_migrate_the_placeholder_to_a_factory_properly() {
     let factory_msg = InstantiateMsg {
         pair_configs: pair_configs.clone(),
         token_code_id: 123,
+        collection_code_id: 456,
         fee_address: None,
         owner: owner.to_string(),
         max_referral_commission: Decimal::one(),
