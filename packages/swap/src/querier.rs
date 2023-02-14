@@ -100,7 +100,8 @@ pub fn query_shares(
     querier: &QuerierWrapper,
     contract_addr: impl Into<String>,
 ) -> StdResult<Uint128> {
-    querier.query_wasm_smart(contract_addr, &Sg721PairQueryMsg::TotalShares {})
+    // querier.query_wasm_smart(contract_addr, &Sg721PairQueryMsg::TotalShares {})
+    Ok(Uint128::zero())
 }
 
 /// Returns the number of decimals that a token has.

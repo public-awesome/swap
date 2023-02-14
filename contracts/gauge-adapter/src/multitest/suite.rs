@@ -3,6 +3,7 @@ use anyhow::Result as AnyResult;
 use cosmwasm_std::{coin, to_binary, Addr, Coin, CosmosMsg, Decimal, Uint128};
 use cw20::{BalanceResponse, Cw20ExecuteMsg, Cw20QueryMsg, MinterResponse};
 use cw20_base::msg::InstantiateMsg as Cw20BaseInstantiateMsg;
+use cw721::Cw721ExecuteMsg;
 use cw_multi_test::{App, AppResponse, BankSudo, ContractWrapper, Executor, SudoMsg};
 
 use cw_placeholder::msg::InstantiateMsg as PlaceholderContractInstantiateMsg;
@@ -633,6 +634,31 @@ impl StakingContract {
             &Cw20ExecuteMsg::Send {
                 contract: self.0.to_string(),
                 amount: amount.into(),
+                msg: to_binary(&ReceiveDelegationMsg::Delegate {
+                    unbonding_period,
+                    delegate_as: None,
+                })
+                .unwrap(),
+            },
+            &[],
+        )
+    }
+
+    pub fn stake_nft(
+        &self,
+        app: &mut App,
+        owner: &str,
+        unbonding_period: u64,
+        collection: Addr,
+        token_id: String,
+    ) -> AnyResult<AppResponse> {
+        app.execute_contract(
+            Addr::unchecked(owner),
+            collection,
+            // TODO: add `ReceiveNft`
+            &Cw721ExecuteMsg::SendNft {
+                contract: self.0.to_string(),
+                token_id,
                 msg: to_binary(&ReceiveDelegationMsg::Delegate {
                     unbonding_period,
                     delegate_as: None,

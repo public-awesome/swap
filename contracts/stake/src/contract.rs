@@ -388,6 +388,8 @@ pub fn execute_mass_bond(
 ) -> Result<Response, ContractError> {
     let cfg = CONFIG.load(deps.storage)?;
 
+    println!("cfg: {:?}", cfg);
+
     // ensure that cw20 token contract's addresses matches
     if cfg.cw20_contract != sender_cw20_contract {
         return Err(ContractError::Cw20AddressesNotMatch {
